@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Editor — Collaborative Notes</title>
+    <meta name="description" content="Real-time collaborative document editor with distributed systems features.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="app-container">
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-brand">
+                <div class="nav-brand-icon">N</div>
+                <span>Notes</span>
+            </a>
+            <div class="nav-divider"></div>
+            <div class="doc-info-pill">
+                <span id="docTitle">Untitled Document</span>
+                <span class="doc-id-tag" id="docIdDisplay" title="Click to copy ID">------</span>
+            </div>
+        </div>
+
+        <div class="navbar-right">
+            <span class="status-indicator" id="connectionStatus">
+                <span class="status-dot disconnected"></span> Disconnected
+            </span>
+            <button class="btn btn-secondary btn-sm" id="shareBtn">Share</button>
+            <button class="btn btn-secondary btn-sm" id="backBtn">Home</button>
+        </div>
+    </nav>
+
+    <!-- Main Workspace (3-Column Layout: Left Collaboration | Center Main Editor | Right Distributed Synchronization) -->
+    <div class="workspace-main">
+
+        <!-- Left Column: Collaboration Panels -->
+        <aside class="sidebar sidebar-left" id="leftSidebar">
+
+            <!-- Panel 1: Connected Participants -->
+            <div class="sidebar-panel">
+                <div class="sidebar-panel-header">
+                    <span class="sidebar-title">Participants</span>
+                </div>
+                <ul class="users-list" id="usersList">
+                    <li><span class="status-dot reconnecting"></span> Waiting for peers...</li>
+                </ul>
+            </div>
+
+            <!-- Panel 2: In-Document Chat -->
+            <div class="sidebar-panel">
+                <div class="sidebar-panel-header">
+                    <span class="sidebar-title">Messages</span>
+                </div>
+                <div class="messages-container" id="messagesContainer"></div>
+                <div class="chat-input-group">
+                    <input type="text" id="messageInput" class="form-control" placeholder="Send a message...">
+                    <button class="btn btn-primary btn-sm" id="sendMsgBtn">Send</button>
+                </div>
+            </div>
+
+            <!-- Panel 3: P2P Video Call -->
+            <div class="sidebar-panel">
+                <div class="sidebar-panel-header">
+                    <span class="sidebar-title">Video Call</span>
+                </div>
+                <div class="video-controls">
+                    <button class="btn btn-secondary btn-sm btn-full" id="startCallBtn">Start Video Call</button>
+                    <button class="btn btn-danger btn-sm btn-full" id="endCallBtn" style="display:none;">End Call</button>
+                </div>
+                <div class="video-section" id="videoSection">
+                    <div class="video-grid">
+                        <div class="video-tile">
+                            <video id="localVideo" autoplay muted playsinline></video>
+                            <span class="video-label">You</span>
+                        </div>
+                        <div class="video-tile">
+                            <video id="remoteVideo" autoplay playsinline></video>
+                            <span class="video-label">Peer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 4: Version History -->
+            <div class="sidebar-panel">
+                <div class="sidebar-panel-header">
+                    <span class="sidebar-title">Version History</span>
+                </div>
+                <ul class="version-list" id="versionList">
+                    <li class="text-muted" style="font-size:12px;">No versions saved yet.</li>
+                </ul>
+            </div>
+
+        </aside>
+
+        <!-- Center Column: MAIN EDITOR -->
+        <main class="editor-canvas-container">
+            <div class="editor-canvas" id="editorCanvas">
+                <div class="editor-header">
+                    <input type="text" class="doc-title-input" id="titleInput" placeholder="Untitled Document" value="Untitled Document">
+                    
+                    <!-- Editor Lock Status Banner (Visible near editor header) -->
+                    <div class="editor-lock-banner" id="editorLockBanner" style="display: none;">
+                        <div class="editor-lock-banner-row">
+                            <span class="editor-lock-badge" id="editorLockBadge">Available</span>
+                            <span class="editor-lock-msg" id="editorLockMsg">You have the editing lock</span>
+                        </div>
+                        <div class="editor-lock-banner-sub" id="editorLockSub"></div>
+                    </div>
+                </div>
+
+                <div class="editor-body">
+                    <textarea id="editor" placeholder="Start typing your notes here..."></textarea>
+                </div>
+
+                <div class="editor-footer">
+                    <span class="last-saved" id="lastSaved">Not saved yet</span>
+                    <button class="btn btn-primary btn-sm" id="saveBtn">Save to Database</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Column: Distributed Synchronization Panel (Kept Fixed on the Right) -->
+        <aside class="sidebar sidebar-right" id="rightSidebar">
+
+            <!-- Panel 5: Distributed Synchronization (Unit III) -->
+            <div class="sidebar-panel ds-panel" id="dsSyncPanel">
+                <div class="sidebar-panel-header ds-panel-toggle" id="dsPanelToggle" role="button" tabindex="0" aria-expanded="true" aria-controls="dsPanelBody">
+                    <span class="sidebar-title">Distributed Synchronization</span>
+                    <span class="ds-chevron" id="dsChevron">&#9650;</span>
+                </div>
+
+                <div id="dsPanelBody">
+
+                    <!-- 5a: Document Lock -->
+                    <div class="ds-section">
+                        <div class="ds-section-title">Document Lock</div>
+                        <div class="ds-lock-grid" id="dsLockGrid">
+                            <div class="ds-kv"><span class="ds-key">Status</span><span class="ds-val" id="dsLockStatus">—</span></div>
+                            <div class="ds-kv"><span class="ds-key">Holder</span><span class="ds-val" id="dsLockHolder">—</span></div>
+                            <div class="ds-kv"><span class="ds-key">Waiting</span><span class="ds-val" id="dsLockWaiting">—</span></div>
+                            <div class="ds-kv"><span class="ds-key">Expires in</span><span class="ds-val" id="dsLockExpiry">—</span></div>
+                        </div>
+                        <div class="ds-lock-actions">
+                            <button class="btn btn-sm btn-secondary" id="dsAcquireBtn">Acquire Lock</button>
+                            <button class="btn btn-sm btn-secondary" id="dsReleaseBtn" disabled>Release Lock</button>
+                        </div>
+                        <div class="ds-lock-msg" id="dsLockMsg"></div>
+                    </div>
+
+                    <!-- 5b: Logical Clock -->
+                    <div class="ds-section">
+                        <div class="ds-section-title">Logical Clock</div>
+                        <div class="ds-kv">
+                            <span class="ds-key">Lamport Time</span>
+                            <span class="ds-val ds-mono" id="dsLamportTime">0</span>
+                        </div>
+                        <div class="ds-kv">
+                            <span class="ds-key">Local Clock</span>
+                            <span class="ds-val ds-mono" id="dsLocalClock">0</span>
+                        </div>
+                    </div>
+
+                    <!-- 5c: Recent Distributed Events -->
+                    <div class="ds-section">
+                        <div class="ds-section-title">Recent Events</div>
+                        <div class="ds-events-wrap">
+                            <table class="ds-events-table" id="dsEventsTable">
+                                <thead>
+                                    <tr>
+                                        <th>LT</th>
+                                        <th>User</th>
+                                        <th>Event</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dsEventsTbody">
+                                    <tr><td colspan="3" class="ds-empty">No events yet</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 5d: Vector Clock -->
+                    <div class="ds-section">
+                        <div class="ds-section-title">Vector Clock</div>
+                        <div class="ds-vc-wrap" id="dsVectorClock">
+                            <span class="ds-empty">No vector data yet</span>
+                        </div>
+                        <div class="ds-kv" style="margin-top:6px;">
+                            <span class="ds-key">Last causality</span>
+                            <span class="ds-val ds-mono" id="dsCausality">—</span>
+                        </div>
+                    </div>
+
+                    <!-- 5e: Global State Snapshot -->
+                    <div class="ds-section">
+                        <div class="ds-section-title">Global Snapshot</div>
+                        <button class="btn btn-sm btn-secondary btn-full" id="dsCaptureSnapshotBtn">Capture Global State</button>
+                        <div class="ds-snapshot-wrap" id="dsSnapshotWrap" style="display:none;">
+                            <pre class="ds-snapshot-pre" id="dsSnapshotPre"></pre>
+                        </div>
+                    </div>
+
+                    <!-- 5f: Service Health -->
+                    <div class="ds-section">
+                        <div class="ds-section-title">Service Health
+                            <button class="btn btn-sm btn-secondary ds-refresh-btn" id="dsRefreshHealthBtn" title="Refresh">Refresh</button>
+                        </div>
+                        <table class="ds-health-table" id="dsHealthTable">
+                            <thead>
+                                <tr><th>Service</th><th>Status</th><th>Last Check</th></tr>
+                            </thead>
+                            <tbody id="dsHealthTbody">
+                                <tr><td colspan="3" class="ds-empty">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div><!-- /dsPanelBody -->
+            </div><!-- /ds-panel -->
+
+        </aside>
+
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Real-Time Libraries -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>if (typeof io === 'undefined') { document.write('<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"><\/script>'); }</script>
+    <script src="js/document.js"></script>
+    <script src="js/webrtc.js"></script>
+    <script src="js/dsync.js"></script>
+</body>
+</html>

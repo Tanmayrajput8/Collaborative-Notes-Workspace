@@ -1,0 +1,34 @@
+{
+  "name": "distributed-collaborative-notes",
+  "version": "1.0.0",
+  "description": "Real-Time Distributed Collaborative Notes and Document System — FA-1 Mini Project",
+  "scripts": {
+    "start:gateway": "node api-gateway/server.js",
+    "start:document": "node document-service/server.js",
+    "start:collab": "node collaboration-service/server.js",
+    "start:all": "echo Please start each service in a separate terminal",
+    "test:api": "node scripts/test-api.js",
+    "test:collab": "node scripts/test-collaboration.js",
+    "test:sync": "node scripts/test-sync.js",
+    "test": "node scripts/test-sync.js"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.4",
+    "@grpc/proto-loader": "^0.8.1",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "http-proxy": "^1.18.1",
+    "mongoose": "^7.6.3",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.8.3"
+  },
+  "keywords": [
+    "distributed-systems",
+    "collaborative-editing",
+    "socket.io",
+    "webrtc"
+  ],
+  "license": "MIT"
+}

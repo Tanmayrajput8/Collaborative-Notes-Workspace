@@ -1,0 +1,100 @@
+/**
+ * document.proto — gRPC Service Definition
+ * ==========================================
+ * 
+ * DISTRIBUTED SYSTEMS CONCEPT — gRPC / Remote Procedure Call (Unit II):
+ * 
+ * This file defines the contract (interface) between the API Gateway
+ * and the Document Service using Protocol Buffers (protobuf).
+ * 
+ * gRPC (Google Remote Procedure Call) allows the API Gateway to call
+ * functions on the Document Service as if they were local function calls,
+ * even though they run on different ports (different processes).
+ * 
+ * Communication Flow:
+ *   Browser → REST/HTTP → API Gateway → gRPC → Document Service → MongoDB
+ * 
+ * Why gRPC for internal communication?
+ *   - Faster than REST (binary protocol, not JSON text)
+ *   - Strongly typed (protobuf enforces message structure)
+ *   - Ideal for service-to-service (internal) communication
+ *   - REST is kept for browser-to-gateway (external) communication
+ */
+
+syntax = "proto3";
+
+package document;
+
+// ============================================================
+// SERVICE DEFINITION
+// Defines the RPC methods that the Document Service exposes
+// ============================================================
+service DocumentService {
+
+    // Create a new document in MongoDB
+    // Called when user clicks "Create Document" on the home page
+    rpc CreateDocument (CreateDocumentRequest) returns (CreateDocumentResponse);
+
+    // Get a document by its ID
+    // Called when user opens or joins a document
+    rpc GetDocument (GetDocumentRequest) returns (GetDocumentResponse);
+
+    // Save/update a document and create a version snapshot
+    // Called when user clicks "Save" in the document editor
+    rpc SaveDocument (SaveDocumentRequest) returns (SaveDocumentResponse);
+}
+
+// ============================================================
+// REQUEST & RESPONSE MESSAGES
+// These define the structure of data sent/received via gRPC
+// ============================================================
+
+// --- CreateDocument ---
+message CreateDocumentRequest {
+    string title = 1;       // Document title (e.g., "Untitled Document")
+}
+
+message CreateDocumentResponse {
+    bool success = 1;           // Whether the operation succeeded
+    string message = 2;         // Human-readable status message
+    string documentId = 3;      // Generated 6-character document ID (e.g., "ABC123")
+    string title = 4;           // Document title
+    string content = 5;         // Document content (empty for new documents)
+    string createdAt = 6;       // ISO timestamp of creation
+    string updatedAt = 7;       // ISO timestamp of last update
+}
+
+// --- GetDocument ---
+message GetDocumentRequest {
+    string documentId = 1;  // The 6-character document ID to look up
+}
+
+message GetDocumentResponse {
+    bool success = 1;           // Whether the document was found
+    string message = 2;         // Human-readable status message
+    string documentId = 3;      // Document ID
+    string title = 4;           // Document title
+    string content = 5;         // Document content
+    string createdAt = 6;       // ISO timestamp of creation
+    string updatedAt = 7;       // ISO timestamp of last update
+}
+
+// --- SaveDocument ---
+message SaveDocumentRequest {
+    string documentId = 1;  // Document ID to update
+    string title = 2;       // Updated title
+    string content = 3;     // Updated content
+    string savedBy = 4;     // Name of the user saving the document
+}
+
+message SaveDocumentResponse {
+    bool success = 1;           // Whether the save succeeded
+    string message = 2;         // Human-readable status message
+    string documentId = 3;      // Document ID
+    string title = 4;           // Updated title
+    string content = 5;         // Updated content
+    string updatedAt = 6;       // ISO timestamp of update
+    int32 versionNumber = 7;    // Version number of the saved snapshot
+    string savedBy = 8;         // Who saved it
+    string versionTimestamp = 9; // ISO timestamp of the version
+}

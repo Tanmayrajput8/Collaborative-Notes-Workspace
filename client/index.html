@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Collaborative Notes — Real-Time Distributed Document System</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="home-page">
+
+    <!-- Header Section -->
+    <header class="home-header">
+        <div class="home-brand">
+            <div class="home-logo-icon">N</div>
+            <span style="font-weight:700;font-size:16px;letter-spacing:-0.02em;">Collaborative Notes</span>
+        </div>
+        <h1 class="home-title" id="pageMainTitle">Real-Time Shared Notes Workspace</h1>
+        <p class="home-subtitle" id="pageMainSubtitle">Create or join a shared document and collaborate in real time with distributed peers.</p>
+
+        <div class="feature-pills" id="featurePills">
+            <span class="feature-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                Real-Time Synchronization
+            </span>
+            <span class="feature-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Multi-User Collaboration
+            </span>
+            <span class="feature-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                P2P Video & Audio
+            </span>
+        </div>
+    </header>
+
+    <!-- CASE 1: Normal Home Page Workspace -->
+    <main class="home-workspace" id="normalHomeView">
+
+        <!-- Card 1: Create Document -->
+        <section class="home-card">
+            <div class="home-card-header">
+                <h2 class="home-card-title">Create New Document</h2>
+                <p class="home-card-desc">Start a fresh document session and invite collaborators.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="userName">Your Name</label>
+                <input type="text" id="userName" class="form-control" placeholder="e.g. Tanmay Rajput" maxlength="30">
+                <p class="error-text" id="nameError">Please enter your name.</p>
+            </div>
+
+            <button class="btn btn-primary btn-full" id="createDocBtn">Create Document</button>
+
+            <!-- Success State Box -->
+            <div class="success-card" id="successMessage">
+                <p class="success-card-title">Document created successfully</p>
+                <div class="doc-id-box">
+                    <span class="doc-id" id="generatedDocId">------</span>
+                </div>
+                <div class="copy-input-group">
+                    <input type="text" id="docLink" class="form-control" readonly>
+                    <button class="btn btn-secondary btn-sm" id="copyLinkBtn">Copy Link</button>
+                </div>
+                <button class="btn btn-primary btn-sm btn-full" id="openDocBtn">Open Document</button>
+            </div>
+        </section>
+
+        <!-- Card 2: Join Document -->
+        <section class="home-card">
+            <div class="home-card-header">
+                <h2 class="home-card-title">Join Existing Document</h2>
+                <p class="home-card-desc">Enter a 6-character Document ID to join an active room.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="docIdInput">Document ID</label>
+                <input type="text" id="docIdInput" class="form-control code-input" placeholder="e.g. ABC123" maxlength="10">
+                <p class="error-text" id="docIdError">Please enter a valid Document ID.</p>
+            </div>
+
+            <button class="btn btn-secondary btn-full" id="joinDocBtn">Join Document</button>
+        </section>
+
+    </main>
+
+    <!-- CASE 2: Shared Document Link Flow -->
+    <main class="shared-link-container" id="sharedLinkView" style="display: none;">
+        <section class="home-card shared-card">
+            <div class="home-card-header">
+                <h2 class="home-card-title">You're joining a shared document</h2>
+                <p class="home-card-desc">Enter your name to join the live collaborative session.</p>
+            </div>
+
+            <div class="shared-doc-badge">
+                <span class="shared-doc-label">Document ID</span>
+                <span class="shared-doc-id" id="sharedDocIdDisplay">------</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="sharedUserName">Your Name</label>
+                <input type="text" id="sharedUserName" class="form-control" placeholder="Enter your name" maxlength="30" autofocus>
+                <p class="error-text" id="sharedNameError">Please enter your name.</p>
+            </div>
+
+            <p class="error-text" id="sharedDocError" style="margin-bottom: 12px;"></p>
+
+            <button class="btn btn-primary btn-full" id="continueBtn">Continue</button>
+
+            <div style="text-align: center; margin-top: 14px;">
+                <a href="index.html" class="nav-switch-link">Or go to Home Page</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/home.js"></script>
+</body>
+</html>
