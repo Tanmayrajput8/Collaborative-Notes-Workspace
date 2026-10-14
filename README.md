@@ -1,9 +1,5 @@
 # Real-Time Distributed Collaborative Notes and Document System
 
-> **B.Tech Distributed Systems — FA-1 Project**  
-> *A service-oriented, real-time collaborative document editor demonstrating Unit I (Distributed Systems Foundations & Architecture), Unit II (Communication, RPC, gRPC, Messaging, Streams & WebRTC), and Unit III (Synchronization: Logical Clocks, Vector Clocks, Distributed Mutual Exclusion, Global State Snapshot & Fault Tolerance), with support for both Local and Remote (LocalTunnel / WAN) multi-device collaboration.*
-
----
 
 ## Table of Contents
 
